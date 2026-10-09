@@ -1,4 +1,5 @@
 import { call, delay, put, race, select } from 'redux-saga/effects'
+import { t } from '@/localization'
 import type { Layout, PrintCommand, PrintData } from '@/print'
 import { buildPrintCommands, executePrintCommands } from '@/print'
 import { selectLayouts } from '@/redux/modules/layout/selectors'
@@ -31,9 +32,7 @@ export function* printLayoutSaga({ payload }: ReturnType<typeof printLayout>) {
     const layouts: Layout[] = yield select(selectLayouts)
     const layout = layouts.find(({ id }) => id === payload.layoutId)
     if (!layout) {
-      yield put(
-        enqueueSnackbar({ message: `レイアウトが見つかりませんでした` }),
-      )
+      yield put(enqueueSnackbar({ message: t('app_layout_not_found') }))
       return
     }
 
@@ -42,9 +41,7 @@ export function* printLayoutSaga({ payload }: ReturnType<typeof printLayout>) {
       const values: PrintData[] = yield select(selectAllPrintData)
       printData = values.find(({ id }) => id === payload.printDataId)
       if (!printData) {
-        yield put(
-          enqueueSnackbar({ message: `印刷データが見つかりませんでした` }),
-        )
+        yield put(enqueueSnackbar({ message: t('app_print_data_not_found') }))
         return
       }
     }
@@ -55,7 +52,9 @@ export function* printLayoutSaga({ payload }: ReturnType<typeof printLayout>) {
       printData,
     )
     if (commands.length === 0) {
-      yield put(enqueueSnackbar({ message: `印刷する内容がありません` }))
+      yield put(
+        enqueueSnackbar({ message: t('app_there_is_nothing_to_print') }),
+      )
       return
     }
 
@@ -66,12 +65,12 @@ export function* printLayoutSaga({ payload }: ReturnType<typeof printLayout>) {
     if (isTimeout) {
       yield put(
         enqueueSnackbar({
-          message: `印刷が終わりませんでした。プリンターの状態を確認してください`,
+          message: t('app_printing_did_not_finish_check_the_printer_status'),
         }),
       )
     }
   } catch (e: any) {
     console.warn('printLayoutSaga', e)
-    yield put(enqueueSnackbar({ message: `印刷に失敗しました` }))
+    yield put(enqueueSnackbar({ message: t('app_printing_failed') }))
   }
 }

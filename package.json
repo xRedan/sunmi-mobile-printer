@@ -99,5 +99,13 @@
   "engines": {
     "node": ">=22.11.0"
   },
-  "packageManager": "yarn@4.9.1"
+  "packageManager": "yarn@4.9.1",
+  "codegenConfig": {
+    "name": "MobPriLocalizationSpec",
+    "type": "modules",
+    "jsSrcsDir": "src/specs",
+    "android": {
+      "javaPackageName": "com.mobpri.localization"
+    }
+  }
 }

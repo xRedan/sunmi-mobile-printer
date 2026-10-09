@@ -20,6 +20,7 @@ import { COLOR, MESSAGE } from '@/CONSTANTS'
 import { InputDialog } from '@/components/Dialog'
 import { Cell, Section } from '@/components/List'
 import { SafeScrollView } from '@/components/SafeScrollView'
+import { useLocalization } from '@/localization'
 import type { Layout, LayoutField } from '@/print'
 import {
   createLayoutField,
@@ -57,12 +58,14 @@ const Component: React.FC<ComponentProps> = ({
   onSubmitLabel,
   onCancelDialog,
 }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
 
   if (!layout) {
     return (
       <View style={styles.empty}>
-        <Text style={styles.emptyText}>レイアウトが見つかりません</Text>
+        <Text style={styles.emptyText}>{t('app_layout_not_found_31b6c4')}</Text>
       </View>
     )
   }
@@ -71,21 +74,20 @@ const Component: React.FC<ComponentProps> = ({
     <>
       <SafeScrollView style={styles.scrollView}>
         <Text style={styles.description}>
-          入力項目は、印刷データごとに内容を変えたい箇所です。要素の「内容の決め方」で
-          「印刷データごとに入力する」を選ぶと、ここで作った入力項目を指定できます。
+          {t('app_input_fields_contain_values_that_can_vary_between_print')}
         </Text>
         <Section>
           <Cell
-            title="入力項目を追加する"
-            description="表示名・キー・入力の種類は、追加したあとに変更できます"
+            title={t('app_add_an_input_field')}
+            description={t('app_you_can_change_the_display_name_key_and_input')}
             onPress={onPressAdd}
           />
         </Section>
         {layout.fields.length === 0 ? (
-          <Section title="入力項目">
+          <Section title={t('app_input_fields')}>
             <Cell
-              title="入力項目がありません"
-              description="上の「入力項目を追加する」から作成してください"
+              title={t('app_no_input_fields')}
+              description={t('app_tap_add_an_input_field_above_to_create_one')}
               inactive={true}
             />
           </Section>
@@ -96,7 +98,7 @@ const Component: React.FC<ComponentProps> = ({
               title={
                 isFieldReferenced(layout, field.id)
                   ? field.label || field.key
-                  : `${field.label || field.key}（未使用）`
+                  : t('app_value_unused', field.label || field.key)
               }
             >
               {/*
@@ -105,30 +107,34 @@ const Component: React.FC<ComponentProps> = ({
               */}
               {!isFieldReferenced(layout, field.id) && (
                 <Cell
-                  title="どの要素からも指定されていません"
-                  description="要素の「内容の決め方」で「印刷データごとに入力する」を選び、この項目を指定すると印刷に反映されます"
+                  title={t('app_no_element_references_this_field')}
+                  description={t(
+                    'app_select_use_an_input_field_under_an_element_s',
+                  )}
                   inactive={true}
                 />
               )}
               <TextValueCell
-                title="表示名"
+                title={t('app_display_name')}
                 value={field.label}
                 onChange={(label) => onChangeField({ ...field, label })}
               />
               <TextValueCell
-                title="キー"
+                title={t('app_key')}
                 value={field.key}
-                dialogDescription="印刷データと結びつける識別子です"
+                dialogDescription={t(
+                  'app_the_identifier_that_links_this_field_to_print_data',
+                )}
                 onChange={(key) => onChangeField({ ...field, key })}
               />
               <PickerCell
-                title="入力の種類"
+                title={t('app_input_type')}
                 value={field.valueType}
                 items={fieldValueTypeItems}
                 onChange={(valueType) => onChangeField({ ...field, valueType })}
               />
               <Cell
-                title="この入力項目を削除する"
+                title={t('app_delete_this_input_field')}
                 onPress={() => onDeleteField(field)}
               />
             </Section>
@@ -137,8 +143,8 @@ const Component: React.FC<ComponentProps> = ({
       </SafeScrollView>
       <InputDialog
         isVisible={isDialogVisible}
-        title="入力項目の追加"
-        description="表示名を入力してください"
+        title={t('app_add_input_field')}
+        description={t('app_enter_a_display_name')}
         onPress={onSubmitLabel}
         onCancel={onCancelDialog}
       />
@@ -147,6 +153,8 @@ const Component: React.FC<ComponentProps> = ({
 }
 
 const Container: React.FC<Props> = (props) => {
+  const t = useLocalization()
+
   const navigation = useNavigation()
   const dispatch = useDispatch()
 
@@ -160,8 +168,8 @@ const Container: React.FC<Props> = (props) => {
   const [isDialogVisible, setIsDialogVisible] = useState<boolean>(false)
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: '入力項目' })
-  }, [navigation])
+    navigation.setOptions({ title: t('app_input_fields') })
+  }, [t, navigation])
 
   const onChangeField = useCallback(
     (field: LayoutField) => {
@@ -181,10 +189,13 @@ const Container: React.FC<Props> = (props) => {
       try {
         const referenced = isFieldReferenced(layout, field.id)
         const confirmed = await AlertAsync(
-          '確認',
+          t('app_confirm'),
           referenced
-            ? `「${field.label || field.key}」を削除しますか？\nこの入力項目を使っている要素は、内容が空の固定値に戻ります。`
-            : `「${field.label || field.key}」を削除しますか？`,
+            ? t(
+                'app_delete_value_elements_that_use_this_field_will_switch',
+                field.label || field.key,
+              )
+            : t('app_delete_value', field.label || field.key),
           [
             { text: MESSAGE.NO, onPress: () => false, style: 'cancel' },
             { text: MESSAGE.YES, onPress: () => true },
@@ -195,10 +206,14 @@ const Container: React.FC<Props> = (props) => {
         }
       } catch (e: any) {
         console.warn('onDeleteField', e)
-        dispatch(enqueueSnackbar({ message: `入力項目を削除できませんでした` }))
+        dispatch(
+          enqueueSnackbar({
+            message: t('app_could_not_delete_the_input_field'),
+          }),
+        )
       }
     },
-    [dispatch, layout],
+    [t, dispatch, layout],
   )
 
   const onPressAdd = useCallback(() => setIsDialogVisible(true), [])
@@ -216,14 +231,14 @@ const Container: React.FC<Props> = (props) => {
           upsertField(
             layout,
             createLayoutField({
-              label: trimmed || '入力項目',
+              label: trimmed || t('app_input_fields'),
               key: trimmed || `field${layout.fields.length + 1}`,
             }),
           ),
         ),
       )
     },
-    [dispatch, layout],
+    [t, dispatch, layout],
   )
 
   return (

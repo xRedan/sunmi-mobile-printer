@@ -20,6 +20,7 @@ import { makeStyles } from 'react-native-swag-styles'
 import { useSelector } from 'react-redux'
 import { BASE64, COLOR } from '@/CONSTANTS'
 import { createPreviewPrintData, PrintPreview } from '@/components/PrintPreview'
+import { useLocalization } from '@/localization'
 import type { Layout, PrintCommand, PrintData } from '@/print'
 import { buildPrintCommands } from '@/print'
 import { selectLayoutById } from '@/redux/modules/layout/selectors'
@@ -53,12 +54,14 @@ const Component: React.FC<ComponentProps> = ({
   scale,
   onLayout,
 }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
 
   if (!layout) {
     return (
       <View style={styles.empty}>
-        <Text style={styles.emptyText}>レイアウトが見つかりません</Text>
+        <Text style={styles.emptyText}>{t('app_layout_not_found_31b6c4')}</Text>
       </View>
     )
   }
@@ -70,16 +73,21 @@ const Component: React.FC<ComponentProps> = ({
       onLayout={onLayout}
     >
       <Text style={styles.notice}>
-        これは画面上のイメージです。実際の印刷結果とは、文字の形や行の詰まり方が
-        異なることがあります。
+        {t('app_this_is_an_on_screen_preview_fonts_and_line_7840d5')}
       </Text>
       <Text style={styles.description}>
-        用紙の幅 {paperPixelWidth}px で描いています。
-        {isPlaceholder ? '入力項目は表示名を仮の値として入れています。' : null}
+        {t('app_paper_width')}
+        {paperPixelWidth}
+        {t('app_px')}
+        {isPlaceholder
+          ? t('app_input_fields_use_their_display_names_as_placeholder_values')
+          : null}
       </Text>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {commands.length === 0 ? (
-          <Text style={styles.emptyText}>印刷される内容がありません</Text>
+          <Text style={styles.emptyText}>
+            {t('app_there_is_nothing_to_print_34b443')}
+          </Text>
         ) : (
           <View
             style={{
@@ -101,6 +109,8 @@ const Component: React.FC<ComponentProps> = ({
 }
 
 const Container: React.FC<Props> = (props) => {
+  const t = useLocalization()
+
   const navigation = useNavigation()
 
   const {
@@ -121,8 +131,8 @@ const Container: React.FC<Props> = (props) => {
   const [availableWidth, setAvailableWidth] = useState<number>(0)
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: 'プレビュー' })
-  }, [navigation])
+    navigation.setOptions({ title: t('app_preview') })
+  }, [t, navigation])
 
   const commands = useMemo(() => {
     if (!layout) {

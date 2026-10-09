@@ -7,6 +7,7 @@ import NfcManager, {
 } from 'react-native-nfc-manager'
 import { call, fork, put, takeEvery } from 'redux-saga/effects'
 import { MESSAGE } from '@/CONSTANTS'
+import { t } from '@/localization'
 import { printText } from '../printer/slice'
 import {
   assignNfcIsReading,
@@ -42,8 +43,8 @@ function* requestIsEnabledSaga() {
     if (!isEnabled) {
       const result: boolean = yield call(
         AlertAsync,
-        '端末の設定から NFC を有効にしてください',
-        `設定画面に移動しますか？\n\n[注意] NFCをサポートしていないモデルもあります。ご利用の機種を確認してください。`,
+        t('app_enable_nfc_in_the_device_settings'),
+        t('app_open_settings_some_models_do_not_support_nfc_check'),
         [
           { text: MESSAGE.NO, onPress: () => false },
           { text: MESSAGE.YES, onPress: () => true },
@@ -96,8 +97,8 @@ function* printNfcTextSaga(message: string) {
   try {
     const result: boolean = yield call(
       AlertAsync,
-      'NFCタグの確認',
-      `「${message}」の内容で複製しますか？`,
+      t('app_confirm_nfc_tag'),
+      t('app_copy_this_content_value', message),
       [
         { text: MESSAGE.NO, onPress: () => false },
         { text: MESSAGE.YES, onPress: () => true },

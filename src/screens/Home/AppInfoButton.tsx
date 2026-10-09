@@ -9,6 +9,7 @@ import {
 import { makeStyles } from 'react-native-swag-styles'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { COLOR } from '@/CONSTANTS'
+import { useLocalization } from '@/localization'
 import { styleType } from '@/utils/styles'
 
 type Props = {
@@ -19,13 +20,15 @@ type Props = {
  * ナビゲーションバー右上に置く、アプリ情報を開くボタン
  */
 export const AppInfoButton: React.FC<Props> = ({ onPress }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
 
   return (
     <Pressable
       style={styles.container}
       onPress={onPress}
-      accessibilityLabel="このアプリについて"
+      accessibilityLabel={t('app_about_this_app')}
       accessibilityRole="button"
       hitSlop={8}
     >

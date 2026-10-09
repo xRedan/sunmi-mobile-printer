@@ -13,6 +13,7 @@ import { makeStyles } from 'react-native-swag-styles'
 import { COLOR, MESSAGE } from '@/CONSTANTS'
 import { Button } from '@/components/Button'
 import { Cell } from '@/components/List'
+import { useLocalization } from '@/localization'
 import type { LayoutElementType } from '@/print'
 import { styleType } from '@/utils/styles'
 import { addableElementTypes, describeElementType } from './describeElement'
@@ -35,6 +36,8 @@ export const ElementTypePickerModal: React.FC<Props> = ({
   onSelect,
   onCancel,
 }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
 
   return (
@@ -46,7 +49,7 @@ export const ElementTypePickerModal: React.FC<Props> = ({
     >
       <View style={styles.container}>
         <View style={styles.modal}>
-          <Text style={styles.title}>要素の追加</Text>
+          <Text style={styles.title}>{t('app_add_element')}</Text>
           <ScrollView style={styles.list}>
             {addableElementTypes.map((type) => (
               <Cell

@@ -14,6 +14,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import { COLOR, ICON } from '@/CONSTANTS'
 import { Button } from '@/components/Button'
 import { contentInset } from '@/components/List/util'
+import { useLocalization } from '@/localization'
 import type { PrintData } from '@/print'
 import { styleType } from '@/utils/styles'
 
@@ -39,6 +40,8 @@ export const PrintDataCell: React.FC<Props> = ({
   onPressEdit,
   onLongPress,
 }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
 
   return (
@@ -65,7 +68,7 @@ export const PrintDataCell: React.FC<Props> = ({
       <Pressable
         style={styles.edit}
         onPress={() => onPressEdit(printData)}
-        accessibilityLabel={`${printData.title}を編集する`}
+        accessibilityLabel={t('app_edit_value', printData.title)}
         accessibilityRole="button"
         hitSlop={8}
       >

@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { makeStyles } from 'react-native-swag-styles'
 import { Cell, ItemSeparator, SectionHeader } from '@/components/List'
 import { type OssLicense, ossLicenseId, ossLicenses } from '@/licenses'
+import { quantity, useLocalization } from '@/localization'
 import { styleType } from '@/utils/styles'
 
 type Props = {}
@@ -22,18 +23,20 @@ type ComponentProps = Props & {
 const keyExtractor = (license: OssLicense) => ossLicenseId(license)
 
 const Component: React.FC<ComponentProps> = ({ licenses, onPressLicense }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
 
   const renderItem = useCallback<ListRenderItem<OssLicense>>(
     ({ item }) => (
       <Cell
         title={item.name}
-        description={`${item.version}・${item.license}`}
+        description={t('app_value_value', item.version, item.license)}
         accessory="disclosure"
         onPress={() => onPressLicense(item)}
       />
     ),
-    [onPressLicense],
+    [t, onPressLicense],
   )
 
   return (
@@ -45,7 +48,11 @@ const Component: React.FC<ComponentProps> = ({ licenses, onPressLicense }) => {
         ItemSeparatorComponent={ItemSeparator}
         ListHeaderComponent={
           <SectionHeader
-            title={`このアプリは次の${licenses.length}個のソフトウェアを使用しています`}
+            title={quantity(
+              'app_this_app_uses_value_software_packages',
+              licenses.length,
+              licenses.length,
+            )}
           />
         }
       />
@@ -54,11 +61,13 @@ const Component: React.FC<ComponentProps> = ({ licenses, onPressLicense }) => {
 }
 
 const Container: React.FC<Props> = (props) => {
+  const t = useLocalization()
+
   const navigation = useNavigation()
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: 'オープンソースライセンス' })
-  }, [navigation])
+    navigation.setOptions({ title: t('app_open_source_licenses') })
+  }, [t, navigation])
 
   const onPressLicense = useCallback(
     (license: OssLicense) => {

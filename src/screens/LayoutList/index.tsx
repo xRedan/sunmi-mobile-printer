@@ -10,6 +10,7 @@ import { InputDialog } from '@/components/Dialog'
 import { Cell, Section } from '@/components/List'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { SafeScrollView } from '@/components/SafeScrollView'
+import { quantity, useLocalization } from '@/localization'
 import type { Layout } from '@/print'
 import { createLayout } from '@/print'
 import {
@@ -47,16 +48,18 @@ const Component: React.FC<ComponentProps> = ({
   onSubmitName,
   onCancelDialog,
 }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
 
   return (
     <>
       <SafeScrollView style={styles.scrollView}>
-        <Section title="レイアウト">
+        <Section title={t('app_layout')}>
           {layouts.length === 0 ? (
             <Cell
-              title="レイアウトがありません"
-              description="下の「レイアウトを追加する」から作成してください"
+              title={t('app_no_layouts')}
+              description={t('app_tap_add_a_layout_below_to_create_one')}
               inactive={true}
             />
           ) : (
@@ -64,7 +67,12 @@ const Component: React.FC<ComponentProps> = ({
               <Cell
                 key={layout.id}
                 title={layout.name}
-                description={`要素${layout.elements.length}個・${formatDateTime(layout.updatedAt)}`}
+                description={quantity(
+                  'app_value_elements_value',
+                  layout.elements.length,
+                  layout.elements.length,
+                  formatDateTime(layout.updatedAt),
+                )}
                 icon={ICON.LAYOUT}
                 accessory="disclosure"
                 onPress={() => onPressLayout(layout)}
@@ -73,10 +81,10 @@ const Component: React.FC<ComponentProps> = ({
             ))
           )}
         </Section>
-        <Section title="操作">
+        <Section title={t('app_actions')}>
           <Cell
-            title="レイアウトを追加する"
-            description="セルを長押しすると複製と削除ができます"
+            title={t('app_add_a_layout')}
+            description={t('app_press_and_hold_a_row_to_duplicate_or_delete')}
             onPress={onPressAdd}
           />
         </Section>
@@ -84,8 +92,8 @@ const Component: React.FC<ComponentProps> = ({
       <LoadingSpinner isLoading={isLoading} />
       <InputDialog
         isVisible={isDialogVisible}
-        title="レイアウトの追加"
-        description="レイアウトの名前を入力してください"
+        title={t('app_add_layout')}
+        description={t('app_enter_a_layout_name')}
         onPress={onSubmitName}
         onCancel={onCancelDialog}
       />
@@ -94,6 +102,8 @@ const Component: React.FC<ComponentProps> = ({
 }
 
 const Container: React.FC<Props> = (props) => {
+  const t = useLocalization()
+
   const navigation = useNavigation()
   const dispatch = useDispatch()
 
@@ -103,8 +113,8 @@ const Container: React.FC<Props> = (props) => {
   const [isDialogVisible, setIsDialogVisible] = useState<boolean>(false)
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: 'レイアウト' })
-  }, [navigation])
+    navigation.setOptions({ title: t('app_layout') })
+  }, [t, navigation])
 
   const onPressLayout = useCallback(
     (layout: Layout) => {
@@ -116,11 +126,19 @@ const Container: React.FC<Props> = (props) => {
   const onLongPressLayout = useCallback(
     async (layout: Layout) => {
       try {
-        const action = await AlertAsync(layout.name, '操作を選んでください', [
-          { text: '複製する', onPress: () => 'duplicate' },
-          { text: '削除する', onPress: () => 'delete', style: 'destructive' },
-          { text: MESSAGE.CANCEL, onPress: () => undefined, style: 'cancel' },
-        ])
+        const action = await AlertAsync(
+          layout.name,
+          t('app_choose_an_action'),
+          [
+            { text: t('app_duplicate'), onPress: () => 'duplicate' },
+            {
+              text: t('app_delete'),
+              onPress: () => 'delete',
+              style: 'destructive',
+            },
+            { text: MESSAGE.CANCEL, onPress: () => undefined, style: 'cancel' },
+          ],
+        )
 
         if (action === 'duplicate') {
           dispatch(duplicateLayout(layout))
@@ -129,8 +147,11 @@ const Container: React.FC<Props> = (props) => {
 
         if (action === 'delete') {
           const confirmed = await AlertAsync(
-            '確認',
-            `「${layout.name}」を削除しますか？\nこのレイアウトの印刷データも消えます。`,
+            t('app_confirm'),
+            t(
+              'app_delete_value_print_data_for_this_layout_will_also',
+              layout.name,
+            ),
             [
               { text: MESSAGE.NO, onPress: () => false, style: 'cancel' },
               { text: MESSAGE.YES, onPress: () => true },
@@ -142,10 +163,12 @@ const Container: React.FC<Props> = (props) => {
         }
       } catch (e: any) {
         console.warn('onLongPressLayout', e)
-        dispatch(enqueueSnackbar({ message: `操作できませんでした` }))
+        dispatch(
+          enqueueSnackbar({ message: t('app_could_not_complete_the_action') }),
+        )
       }
     },
-    [dispatch],
+    [t, dispatch],
   )
 
   const onPressAdd = useCallback(() => {
@@ -155,9 +178,9 @@ const Container: React.FC<Props> = (props) => {
   const onSubmitName = useCallback(
     (name: string) => {
       setIsDialogVisible(false)
-      dispatch(saveLayout(createLayout(name.trim() || '新しいレイアウト')))
+      dispatch(saveLayout(createLayout(name.trim() || t('app_new_layout'))))
     },
-    [dispatch],
+    [t, dispatch],
   )
 
   const onCancelDialog = useCallback(() => {

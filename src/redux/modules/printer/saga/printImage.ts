@@ -1,6 +1,7 @@
 import * as SunmiPrinterLibrary from '@mitsuharu/react-native-sunmi-printer-library'
 import { call, put } from 'redux-saga/effects'
 import { BASE64 } from '@/CONSTANTS'
+import { t } from '@/localization'
 import { enqueueSnackbar } from '@/redux/modules/snackbar/slice'
 import { fetchResizedImagePath } from '@/utils/ImagePicker'
 import { readImageFile } from '@/utils/imageStore'
@@ -22,7 +23,7 @@ export function* printImageSaga({ payload }: ReturnType<typeof printImage>) {
     console.warn('printSaga', e)
     yield put(
       enqueueSnackbar({
-        message: `印刷に失敗しました`,
+        message: t('app_printing_failed'),
       }),
     )
   }
@@ -43,7 +44,7 @@ export function* printImageFromImagePickerSaga({
     console.warn('printSaga', e)
     yield put(
       enqueueSnackbar({
-        message: `印刷データが取得できませんでした`,
+        message: t('app_could_not_retrieve_the_image_to_print'),
       }),
     )
   }

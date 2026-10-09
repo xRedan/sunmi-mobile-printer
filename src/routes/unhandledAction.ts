@@ -1,4 +1,5 @@
 import type { NavigationAction } from '@react-navigation/native'
+import { t } from '@/localization'
 
 /**
  * 遷移が処理されなかったときに出す文言を作る
@@ -11,7 +12,7 @@ import type { NavigationAction } from '@react-navigation/native'
 export const describeUnhandledAction = (action: NavigationAction): string => {
   const name = (action.payload as { name?: unknown } | undefined)?.name
   if (typeof name === 'string' && name !== '') {
-    return `画面を開けませんでした（${name}）`
+    return t('app_could_not_open_screen_value', name)
   }
-  return `画面を移動できませんでした（${action.type}）`
+  return t('app_could_not_navigate_value', action.type)
 }

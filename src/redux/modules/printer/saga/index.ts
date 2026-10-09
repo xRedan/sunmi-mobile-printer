@@ -2,6 +2,7 @@ import * as SunmiPrinterLibrary from '@mitsuharu/react-native-sunmi-printer-libr
 import { Platform } from 'react-native'
 import { getBrand, isEmulator } from 'react-native-device-info'
 import { call, fork, put, takeEvery } from 'redux-saga/effects'
+import { t } from '@/localization'
 import { enqueueSnackbar } from '@/redux/modules/snackbar/slice'
 import {
   assignIsPrintable,
@@ -42,7 +43,7 @@ function* printInitSaga() {
     if (isSimulator) {
       yield put(
         enqueueSnackbar({
-          message: `シミュレーターなので印刷できません`,
+          message: t('app_printing_is_unavailable_in_an_emulator'),
         }),
       )
       return
@@ -52,7 +53,7 @@ function* printInitSaga() {
     if (!brand.toLocaleLowerCase().includes('sunmi')) {
       yield put(
         enqueueSnackbar({
-          message: `SUNMI端末を使用してください`,
+          message: t('app_use_a_sunmi_device'),
         }),
       )
       return
@@ -66,7 +67,7 @@ function* printInitSaga() {
     yield put(assignIsPrintable(false))
     yield put(
       enqueueSnackbar({
-        message: `プリンターの接続に失敗しました`,
+        message: t('app_could_not_connect_to_the_printer'),
       }),
     )
   }

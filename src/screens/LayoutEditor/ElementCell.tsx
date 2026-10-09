@@ -13,6 +13,7 @@ import { makeStyles } from 'react-native-swag-styles'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { COLOR } from '@/CONSTANTS'
 import { Button } from '@/components/Button'
+import { useLocalization } from '@/localization'
 import type { Layout, LayoutElement } from '@/print'
 import { styleType } from '@/utils/styles'
 import { describeElement, describeElementType } from './describeElement'
@@ -31,6 +32,8 @@ type Props = {
  * どうかが分かりにくいうえ、押したまま指を動かす操作と相性が悪い。
  */
 export const ElementCell: React.FC<Props> = ({ element, layout, onPress }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
   const drag = useReorderableDrag()
 
@@ -45,7 +48,7 @@ export const ElementCell: React.FC<Props> = ({ element, layout, onPress }) => {
       <Pressable
         style={styles.handle}
         onPressIn={drag}
-        accessibilityLabel="並べ替え"
+        accessibilityLabel={t('app_reorder')}
         accessibilityRole="button"
       >
         <Icon name="drag-handle" size={24} style={styles.handleIcon} />

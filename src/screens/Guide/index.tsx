@@ -13,6 +13,7 @@ import { makeStyles } from 'react-native-swag-styles'
 import { COLOR } from '@/CONSTANTS'
 import { SectionHeader } from '@/components/List'
 import { SafeScrollView } from '@/components/SafeScrollView'
+import { useLocalization } from '@/localization'
 import { styleType } from '@/utils/styles'
 import { type GuideSection, guideSections } from './sections'
 
@@ -22,6 +23,8 @@ type ComponentProps = Props & {
 }
 
 const Component: React.FC<ComponentProps> = ({ sections }) => {
+  useLocalization()
+
   const styles = useStyles()
 
   return (
@@ -39,11 +42,13 @@ const Component: React.FC<ComponentProps> = ({ sections }) => {
 }
 
 const Container: React.FC<Props> = (props) => {
+  const t = useLocalization()
+
   const navigation = useNavigation()
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: '使い方' })
-  }, [navigation])
+    navigation.setOptions({ title: t('app_user_guide') })
+  }, [t, navigation])
 
   return <Component {...props} {...{ sections: guideSections }} />
 }

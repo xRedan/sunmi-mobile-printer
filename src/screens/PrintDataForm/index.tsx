@@ -20,6 +20,7 @@ import { BASE64, COLOR, ICON, MESSAGE } from '@/CONSTANTS'
 import { ImageFileView } from '@/components/ImageFileView'
 import { Cell, Section } from '@/components/List'
 import { SafeScrollView } from '@/components/SafeScrollView'
+import { t, useLocalization } from '@/localization'
 import type { Layout, LayoutField, PrintData, PrintDataValue } from '@/print'
 import { unusedFields as findUnusedFields } from '@/print'
 import { selectLayoutById } from '@/redux/modules/layout/selectors'
@@ -72,9 +73,9 @@ const imagePathOf = (value: PrintDataValue | undefined) =>
  */
 const describeValue = (value: PrintDataValue | undefined) => {
   if (value?.kind === 'image') {
-    return '画像あり'
+    return t('app_image_selected')
   }
-  return value?.value || '未入力'
+  return value?.value || t('app_empty_dfabff')
 }
 
 const Component: React.FC<ComponentProps> = ({
@@ -90,44 +91,48 @@ const Component: React.FC<ComponentProps> = ({
   onPressLayout,
   onPressDelete,
 }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
 
   if (!layout || !printData) {
     return (
       <View style={styles.empty}>
-        <Text style={styles.emptyText}>印刷データが見つかりません</Text>
+        <Text style={styles.emptyText}>
+          {t('app_print_data_not_found_1fdfc7')}
+        </Text>
       </View>
     )
   }
 
   return (
     <SafeScrollView style={styles.scrollView}>
-      <Section title="印刷データ">
+      <Section title={t('app_print_data')}>
         {/*
           入力項目にも「名前」が並ぶため、ここは「印刷データ名」と呼び分ける
         */}
         <TextValueCell
-          title="印刷データ名"
+          title={t('app_print_record_name')}
           value={printData.title}
-          dialogDescription="一覧に表示する名前です"
+          dialogDescription={t('app_the_name_shown_in_the_list')}
           onChange={onChangeTitle}
         />
       </Section>
 
       {usedFields.length === 0 ? (
-        <Section title="入力">
+        <Section title={t('app_input')}>
           <Cell
-            title="入力する項目がありません"
+            title={t('app_no_fields_to_fill_in')}
             description={
               layout.fields.length === 0
-                ? 'レイアウトの「入力項目」を追加すると、ここに入力欄が現れます'
-                : '入力項目はありますが、どの要素からも指定されていません'
+                ? t('app_add_input_fields_to_the_layout_to_make_them')
+                : t('app_input_fields_exist_but_no_element_references_them')
             }
             inactive={true}
           />
         </Section>
       ) : (
-        <Section title="入力">
+        <Section title={t('app_input')}>
           {usedFields.map((field) =>
             field.valueType === 'image' ? (
               <View key={field.id} style={styles.imageRow}>
@@ -156,15 +161,17 @@ const Component: React.FC<ComponentProps> = ({
       )}
 
       {unusedFields.length > 0 && (
-        <Section title="このレイアウトで使っていない項目">
+        <Section title={t('app_fields_not_used_by_this_layout')}>
           {/*
             要素の「内容の決め方」を「レイアウトに直接書く」へ変えても、入力項目は
             レイアウトに残る。そのまま入力欄として並べると、入力したのに印刷が
             変わらない。値は消さずに残したまま、入力させずに理由を添える。
           */}
           <Cell
-            title="入力しても印刷には出ません"
-            description="レイアウトの要素で「内容の決め方」を「印刷データごとに入力する」にして、この項目を指定すると反映されます"
+            title={t('app_these_values_will_not_appear_on_the_printout')}
+            description={t(
+              'app_select_use_an_input_field_under_an_element_s_cfecce',
+            )}
             inactive={true}
           />
           {unusedFields.map((field) => (
@@ -178,27 +185,32 @@ const Component: React.FC<ComponentProps> = ({
         </Section>
       )}
 
-      <Section title="操作">
-        <Cell title="この内容で印刷する" onPress={onPressPrint} />
+      <Section title={t('app_actions')}>
+        <Cell title={t('app_print_this_record')} onPress={onPressPrint} />
         <Cell
-          title="印刷イメージを見る"
+          title={t('app_print_preview')}
           onPress={onPressPreview}
           accessory="disclosure"
         />
         <Cell
-          title="レイアウトを編集する"
+          title={t('app_edit_layout')}
           description={layout.name}
           icon={ICON.LAYOUT}
           onPress={onPressLayout}
           accessory="disclosure"
         />
-        <Cell title="この印刷データを削除する" onPress={onPressDelete} />
+        <Cell
+          title={t('app_delete_this_print_record')}
+          onPress={onPressDelete}
+        />
       </Section>
     </SafeScrollView>
   )
 }
 
 const Container: React.FC<Props> = (props) => {
+  const t = useLocalization()
+
   const navigation = useNavigation()
   const dispatch = useDispatch()
 
@@ -229,8 +241,8 @@ const Container: React.FC<Props> = (props) => {
   )
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: printData?.title ?? '印刷データ' })
-  }, [navigation, printData?.title])
+    navigation.setOptions({ title: printData?.title ?? t('app_print_data') })
+  }, [t, navigation, printData?.title])
 
   const onChangeTitle = useCallback(
     (title: string) => {
@@ -274,10 +286,12 @@ const Container: React.FC<Props> = (props) => {
         })
       } catch (e: any) {
         console.warn('onChangeImage', e)
-        dispatch(enqueueSnackbar({ message: `画像を取り込めませんでした` }))
+        dispatch(
+          enqueueSnackbar({ message: t('app_could_not_import_the_image') }),
+        )
       }
     },
-    [dispatch, onChangeValue],
+    [t, dispatch, onChangeValue],
   )
 
   const onPressPreview = useCallback(() => {
@@ -298,8 +312,8 @@ const Container: React.FC<Props> = (props) => {
     }
     try {
       const confirmed = await AlertAsync(
-        '確認',
-        `「${printData.title}」を削除しますか？`,
+        t('app_confirm'),
+        t('app_delete_value', printData.title),
         [
           { text: MESSAGE.NO, onPress: () => false, style: 'cancel' },
           { text: MESSAGE.YES, onPress: () => true },
@@ -311,9 +325,9 @@ const Container: React.FC<Props> = (props) => {
       }
     } catch (e: any) {
       console.warn('onPressDelete', e)
-      dispatch(enqueueSnackbar({ message: `削除できませんでした` }))
+      dispatch(enqueueSnackbar({ message: t('app_could_not_delete') }))
     }
-  }, [dispatch, navigation, printData])
+  }, [t, dispatch, navigation, printData])
 
   return (
     <Component

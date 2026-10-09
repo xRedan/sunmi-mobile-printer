@@ -13,6 +13,7 @@ import {
   ListPickerModal,
 } from '@/components/Modal/ListPickerModal'
 import { SafeScrollView } from '@/components/SafeScrollView'
+import { t, useLocalization } from '@/localization'
 import type { Layout, PrintData } from '@/print'
 import {
   selectLayoutIsLoading,
@@ -37,8 +38,18 @@ import { PrintDataCell } from './PrintDataCell'
 type PrintDataAction = 'duplicate' | 'delete'
 
 const printDataActions: ListPickerItem<PrintDataAction>[] = [
-  { value: 'duplicate', title: '複製する' },
-  { value: 'delete', title: '削除する' },
+  {
+    value: 'duplicate',
+    get title() {
+      return t('app_duplicate')
+    },
+  },
+  {
+    value: 'delete',
+    get title() {
+      return t('app_delete')
+    },
+  },
 ]
 
 type Props = {}
@@ -71,29 +82,31 @@ const Component: React.FC<ComponentProps> = ({
   onNavigateToPrinter,
   onNavigateToLayoutList,
 }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
 
   return (
     <>
       <SafeScrollView style={styles.scrollView}>
-        <Section title="汎用印刷">
+        <Section title={t('app_quick_print')}>
           <InputDialogCell
-            title="テキストを印刷する"
-            dialogTitle="テキスト印刷"
-            dialogDescription="印刷するテキストを入力してください"
+            title={t('app_print_text')}
+            dialogTitle={t('app_text_printing')}
+            dialogDescription={t('app_enter_the_text_to_print')}
             onSelectText={onPressText}
           />
           <Cell
-            title="その他"
+            title={t('app_more_printing_options')}
             onPress={onNavigateToPrinter}
             accessory="disclosure"
           />
         </Section>
-        <Section title="レイアウト印刷">
+        <Section title={t('app_layout_printing')}>
           {printData.length === 0 ? (
             <Cell
-              title="印刷データがありません"
-              description="「レイアウトを管理する」から作成してください"
+              title={t('app_no_print_data')}
+              description={t('app_create_print_data_from_manage_layouts')}
               inactive={true}
             />
           ) : (
@@ -109,10 +122,10 @@ const Component: React.FC<ComponentProps> = ({
             ))
           )}
         </Section>
-        <Section title="レイアウト印刷のオプション">
+        <Section title={t('app_layout_options')}>
           <Cell
-            title="レイアウトを管理する"
-            description="レイアウトの作成・編集と、印刷データの入力"
+            title={t('app_manage_layouts')}
+            description={t('app_create_and_edit_layouts_and_enter_print_data')}
             icon={ICON.LAYOUT}
             onPress={onNavigateToLayoutList}
             accessory="disclosure"
@@ -123,7 +136,7 @@ const Component: React.FC<ComponentProps> = ({
       <ListPickerModal
         visible={!!actionTarget}
         title={actionTarget?.title ?? ''}
-        description="操作を選んでください"
+        description={t('app_choose_an_action')}
         items={printDataActions}
         onSelect={onSelectAction}
         onCancel={onCancelAction}
@@ -133,6 +146,8 @@ const Component: React.FC<ComponentProps> = ({
 }
 
 const Container: React.FC<Props> = (props) => {
+  const t = useLocalization()
+
   const navigation = useNavigation()
   const dispatch = useDispatch()
 
@@ -155,10 +170,10 @@ const Container: React.FC<Props> = (props) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'モバイル印刷 for SUNMI',
+      title: t('app_mobile_print_for_sunmi'),
       headerRight: () => <AppInfoButton onPress={onNavigateToAppInfo} />,
     })
-  }, [navigation, onNavigateToAppInfo])
+  }, [t, navigation, onNavigateToAppInfo])
 
   const onPressText = useCallback(
     (text: string) => {
@@ -207,8 +222,8 @@ const Container: React.FC<Props> = (props) => {
 
         if (action === 'delete') {
           const confirmed = await AlertAsync(
-            '確認',
-            `「${value.title}」を削除しますか？`,
+            t('app_confirm'),
+            t('app_delete_value', value.title),
             [
               { text: MESSAGE.NO, onPress: () => false, style: 'cancel' },
               { text: MESSAGE.YES, onPress: () => true },
@@ -220,10 +235,12 @@ const Container: React.FC<Props> = (props) => {
         }
       } catch (e: any) {
         console.warn('onSelectAction', e)
-        dispatch(enqueueSnackbar({ message: `操作できませんでした` }))
+        dispatch(
+          enqueueSnackbar({ message: t('app_could_not_complete_the_action') }),
+        )
       }
     },
-    [actionTarget, dispatch],
+    [t, actionTarget, dispatch],
   )
 
   const onNavigateToPrinter = useCallback(() => {

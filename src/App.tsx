@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { Provider as ReduxProvider } from 'react-redux'
 import { PersistGate as PersistProvider } from 'redux-persist/integration/react'
+import { LocalizationProvider } from '@/localization'
 import { initializeRedux } from '@/redux'
 import { Routes } from '@/routes'
 import { styleType } from '@/utils/styles'
@@ -17,8 +18,10 @@ const App: React.FC = () => {
       <SafeAreaProvider>
         <ReduxProvider store={store}>
           <PersistProvider loading={false} persistor={persistor}>
-            <Routes />
-            <NfcModel />
+            <LocalizationProvider>
+              <Routes />
+              <NfcModel />
+            </LocalizationProvider>
           </PersistProvider>
         </ReduxProvider>
       </SafeAreaProvider>

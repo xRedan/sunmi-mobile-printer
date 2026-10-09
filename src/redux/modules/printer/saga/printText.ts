@@ -1,6 +1,7 @@
 import * as SunmiPrinterLibrary from '@mitsuharu/react-native-sunmi-printer-library'
 import { call, put } from 'redux-saga/effects'
 import { FONT_SIZE } from '@/CONSTANTS'
+import { t } from '@/localization'
 import { enqueueSnackbar } from '@/redux/modules/snackbar/slice'
 import type { printText } from '../slice'
 import type { TextSource } from '../utils'
@@ -20,7 +21,7 @@ export function* printTextSaga({ payload }: ReturnType<typeof printText>) {
     console.warn('printSaga', e)
     yield put(
       enqueueSnackbar({
-        message: `印刷に失敗しました`,
+        message: t('app_printing_failed'),
       }),
     )
   }

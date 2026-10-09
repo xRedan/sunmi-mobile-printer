@@ -6,6 +6,7 @@ import {
   type SqliteConnection,
   saveLayout as saveLayoutToDatabase,
 } from '@/database'
+import { t } from '@/localization'
 import { duplicateLayout as duplicateLayoutValue, type Layout } from '@/print'
 import { reloadPrintDataSaga } from '@/redux/modules/printData/saga'
 import { enqueueSnackbar } from '@/redux/modules/snackbar/slice'
@@ -41,9 +42,7 @@ function* fetchLayoutsSaga() {
     yield call(reloadLayoutsSaga)
   } catch (e: any) {
     console.warn('fetchLayoutsSaga', e)
-    yield put(
-      enqueueSnackbar({ message: `レイアウトの読み込みに失敗しました` }),
-    )
+    yield put(enqueueSnackbar({ message: t('app_could_not_load_layouts') }))
   } finally {
     yield put(assignIsLoading(false))
   }
@@ -68,7 +67,7 @@ function* saveLayoutSaga({ payload }: ReturnType<typeof saveLayout>) {
     }
   } catch (e: any) {
     console.warn('saveLayoutSaga', e)
-    yield put(enqueueSnackbar({ message: `レイアウトの保存に失敗しました` }))
+    yield put(enqueueSnackbar({ message: t('app_could_not_save_the_layout') }))
   }
 }
 
@@ -78,13 +77,15 @@ function* duplicateLayoutSaga({ payload }: ReturnType<typeof duplicateLayout>) {
     const copied: Layout = yield call(
       duplicateLayoutValue,
       payload,
-      `${payload.name}のコピー`,
+      t('app_value_copy', payload.name),
     )
     yield call(saveLayoutToDatabase, db, copied)
     yield call(reloadLayoutsSaga)
   } catch (e: any) {
     console.warn('duplicateLayoutSaga', e)
-    yield put(enqueueSnackbar({ message: `レイアウトの複製に失敗しました` }))
+    yield put(
+      enqueueSnackbar({ message: t('app_could_not_duplicate_the_layout') }),
+    )
   }
 }
 
@@ -99,6 +100,8 @@ function* deleteLayoutSaga({ payload }: ReturnType<typeof deleteLayout>) {
     yield call(reloadPrintDataSaga)
   } catch (e: any) {
     console.warn('deleteLayoutSaga', e)
-    yield put(enqueueSnackbar({ message: `レイアウトの削除に失敗しました` }))
+    yield put(
+      enqueueSnackbar({ message: t('app_could_not_delete_the_layout') }),
+    )
   }
 }

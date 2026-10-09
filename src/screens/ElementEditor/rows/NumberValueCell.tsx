@@ -1,5 +1,6 @@
 import type React from 'react'
 import { useCallback } from 'react'
+import { useLocalization } from '@/localization'
 import { TextValueCell } from './TextValueCell'
 
 type Props = {
@@ -26,6 +27,8 @@ export const NumberValueCell: React.FC<Props> = ({
   max,
   onChange,
 }) => {
+  const t = useLocalization()
+
   const onChangeText = useCallback(
     (text: string) => {
       const next = Number(text.trim())
@@ -45,7 +48,11 @@ export const NumberValueCell: React.FC<Props> = ({
       title={title}
       value={String(value)}
       displayValue={`${value}${unit ?? ''}`}
-      dialogDescription={`${min}〜${max} の数値を入力してください`}
+      dialogDescription={t(
+        'app_enter_a_number_between_value_and_value',
+        min,
+        max,
+      )}
       keyboardType="number-pad"
       onChange={onChangeText}
     />

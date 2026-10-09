@@ -20,6 +20,7 @@ import { COLOR } from '@/CONSTANTS'
 import { Cell, Section } from '@/components/List'
 import { SafeScrollView } from '@/components/SafeScrollView'
 import { findOssLicense, type OssLicense } from '@/licenses'
+import { useLocalization } from '@/localization'
 import { openWeb } from '@/redux/modules/inAppWebBrowser/slice'
 import type { MainParams } from '@/routes/main.params'
 import { styleType } from '@/utils/styles'
@@ -31,15 +32,19 @@ type ComponentProps = Props & {
 }
 
 const Component: React.FC<ComponentProps> = ({ license, onPressHomepage }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
 
   if (!license) {
     return (
       <SafeScrollView style={styles.scrollView}>
-        <Section title="ライセンス">
+        <Section title={t('app_license')}>
           <Cell
-            title="ライセンス情報が見つかりません"
-            description="`yarn licenses:generate` で一覧を作り直してください"
+            title={t('app_license_information_not_found')}
+            description={t(
+              'app_regenerate_the_list_with_yarn_licenses_generate',
+            )}
           />
         </Section>
       </SafeScrollView>
@@ -50,20 +55,20 @@ const Component: React.FC<ComponentProps> = ({ license, onPressHomepage }) => {
 
   return (
     <SafeScrollView style={styles.scrollView}>
-      <Section title="パッケージ">
-        <Cell title="バージョン" description={license.version} />
-        <Cell title="ライセンス" description={license.license} />
-        {!!author && <Cell title="作者" description={author} />}
+      <Section title={t('app_package')}>
+        <Cell title={t('app_version')} description={license.version} />
+        <Cell title={t('app_license')} description={license.license} />
+        {!!author && <Cell title={t('app_author')} description={author} />}
         {!!homepage && (
           <Cell
-            title="ホームページ"
+            title={t('app_homepage')}
             description={homepage}
             accessory="link"
             onPress={() => onPressHomepage(homepage)}
           />
         )}
       </Section>
-      <Section title="ライセンス本文">
+      <Section title={t('app_license_text')}>
         <View style={styles.textContainer}>
           {/*
             本文は選択できるようにしない。Androidでは選択できる文字がタッチ
@@ -75,7 +80,7 @@ const Component: React.FC<ComponentProps> = ({ license, onPressHomepage }) => {
           */}
           <Text style={styles.text}>
             {licenseText ??
-              'このパッケージはライセンス本文を同梱していません。ホームページを参照してください。'}
+              t('app_this_package_does_not_include_its_license_text_refer')}
           </Text>
         </View>
       </Section>
@@ -84,6 +89,8 @@ const Component: React.FC<ComponentProps> = ({ license, onPressHomepage }) => {
 }
 
 const Container: React.FC<Props> = (props) => {
+  const t = useLocalization()
+
   const navigation = useNavigation()
   const dispatch = useDispatch()
   const { params } = useRoute<RouteProp<MainParams, 'LicenseDetail'>>()
@@ -94,8 +101,8 @@ const Container: React.FC<Props> = (props) => {
   )
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: license?.name ?? 'ライセンス' })
-  }, [navigation, license])
+    navigation.setOptions({ title: license?.name ?? t('app_license') })
+  }, [t, navigation, license])
 
   const onPressHomepage = useCallback(
     (url: string) => {

@@ -3,6 +3,7 @@ import {
   type PrinterInfo,
 } from '@mitsuharu/react-native-sunmi-printer-library'
 import { call, put, select } from 'redux-saga/effects'
+import { t } from '@/localization'
 import { enqueueSnackbar } from '@/redux/modules/snackbar/slice'
 import { selectIsPrintable } from '../selectors'
 import { assignPrinterInfo } from '../slice'
@@ -16,7 +17,7 @@ export function* validatePrinterSaga() {
     if (!isPrintable) {
       yield put(
         enqueueSnackbar({
-          message: `印刷に失敗しました。プリンターが搭載されていない、もしくはプリンターに接続できていません。`,
+          message: t('app_printing_failed_this_device_has_no_printer_or_the'),
         }),
       )
     }

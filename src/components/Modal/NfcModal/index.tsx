@@ -14,6 +14,7 @@ import { makeStyles } from 'react-native-swag-styles'
 import { useDispatch, useSelector } from 'react-redux'
 import { COLOR, MESSAGE } from '@/CONSTANTS'
 import { Button } from '@/components/Button'
+import { useLocalization } from '@/localization'
 import { selectNfcIsReading } from '@/redux/modules/nfc/selectors'
 import { stopReadingNfc } from '@/redux/modules/nfc/slice'
 import { styleType } from '@/utils/styles'
@@ -32,6 +33,8 @@ const Component: React.FC<ComponentProps> = ({
   visible,
   onCancel,
 }) => {
+  useLocalization()
+
   const styles = useStyles()
   return (
     <Modal
@@ -63,6 +66,8 @@ const Component: React.FC<ComponentProps> = ({
 }
 
 const Container: React.FC<Props> = (props) => {
+  const t = useLocalization()
+
   const dispatch = useDispatch()
   const isReading = useSelector(selectNfcIsReading)
 
@@ -70,9 +75,9 @@ const Container: React.FC<Props> = (props) => {
     dispatch(stopReadingNfc())
   }, [dispatch])
 
-  const title = 'NFCタグの読込み'
+  const title = t('app_read_nfc_tag')
 
-  const description = 'NFCタグを端末に近づけてください'
+  const description = t('app_hold_an_nfc_tag_near_the_device')
 
   return (
     <Component

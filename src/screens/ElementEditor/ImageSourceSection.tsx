@@ -5,6 +5,7 @@ import { BASE64 } from '@/CONSTANTS'
 import { InputDialog } from '@/components/Dialog'
 import { ImageFileView } from '@/components/ImageFileView'
 import { Section } from '@/components/List'
+import { useLocalization } from '@/localization'
 import type { ImageSource, Layout, LayoutField } from '@/print'
 import { createLayoutField } from '@/print'
 import { copyImageFile } from '@/utils/imageStore'
@@ -35,6 +36,8 @@ export const ImageSourceSection: React.FC<Props> = ({
   width,
   onChange,
 }) => {
+  const t = useLocalization()
+
   const [isDialogVisible, setIsDialogVisible] = useState<boolean>(false)
 
   const onSubmitNewField = useCallback(
@@ -42,13 +45,13 @@ export const ImageSourceSection: React.FC<Props> = ({
       setIsDialogVisible(false)
       const trimmed = label.trim()
       const field = createLayoutField({
-        label: trimmed || '入力項目',
+        label: trimmed || t('app_input_fields'),
         key: trimmed || `field${layout.fields.length + 1}`,
         valueType: 'image',
       })
       onChange({ kind: 'field', fieldId: field.id }, field)
     },
-    [layout.fields.length, onChange],
+    [t, layout.fields.length, onChange],
   )
 
   const onChangeKind = useCallback(
@@ -89,20 +92,22 @@ export const ImageSourceSection: React.FC<Props> = ({
   )
 
   return (
-    <Section title="内容">
+    <Section title={t('app_content')}>
       <PickerCell
-        title="内容の決め方"
+        title={t('app_content_source')}
         value={source.kind}
         items={[
           {
             value: 'static' as SourceKind,
-            title: 'レイアウトに直接置く',
-            description: 'どの印刷データでも同じ画像になります',
+            title: t('app_use_a_fixed_image'),
+            description: t('app_use_the_same_image_for_every_print_record'),
           },
           {
             value: 'field' as SourceKind,
-            title: '印刷データごとに入力する',
-            description: '印刷データごとに画像を変えられます',
+            title: t('app_use_an_input_field'),
+            description: t(
+              'app_choose_a_different_image_for_each_print_record',
+            ),
           },
         ]}
         onChange={onChangeKind}
@@ -113,8 +118,10 @@ export const ImageSourceSection: React.FC<Props> = ({
         </View>
       ) : (
         <PickerCell
-          title="入力項目"
-          description="印刷データごとに入力する箇所です"
+          title={t('app_input_fields')}
+          description={t(
+            'app_fields_whose_content_can_vary_between_print_records',
+          )}
           value={source.fieldId}
           items={layout.fields.map((field) => ({
             value: field.id,
@@ -122,8 +129,8 @@ export const ImageSourceSection: React.FC<Props> = ({
             description: field.key,
           }))}
           action={{
-            title: '入力項目を追加する',
-            description: 'このレイアウトに新しい入力欄を作ります',
+            title: t('app_add_an_input_field'),
+            description: t('app_create_a_new_input_field_in_this_layout'),
             onPress: () => setIsDialogVisible(true),
           }}
           onChange={(fieldId) => onChange({ kind: 'field', fieldId })}
@@ -131,8 +138,8 @@ export const ImageSourceSection: React.FC<Props> = ({
       )}
       <InputDialog
         isVisible={isDialogVisible}
-        title="入力項目の追加"
-        description="表示名を入力してください"
+        title={t('app_add_input_field')}
+        description={t('app_enter_a_display_name')}
         onPress={onSubmitNewField}
         onCancel={() => setIsDialogVisible(false)}
       />

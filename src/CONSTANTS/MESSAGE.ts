@@ -1,6 +1,15 @@
+import { t } from '@/localization'
 export const MESSAGE = {
-  YES: 'はい',
-  NO: 'いいえ',
-  OK: 'OK',
-  CANCEL: 'キャンセル',
+  get YES() {
+    return t('app_yes')
+  },
+  get NO() {
+    return t('app_no')
+  },
+  get OK() {
+    return t('app_ok')
+  },
+  get CANCEL() {
+    return t('app_cancel')
+  },
 }

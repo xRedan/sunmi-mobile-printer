@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { BASE64, COLOR, MESSAGE } from '@/CONSTANTS'
 import { Cell, Section } from '@/components/List'
 import { SafeScrollView } from '@/components/SafeScrollView'
+import { t, useLocalization } from '@/localization'
 import type { Layout, LayoutElement, LayoutField } from '@/print'
 import { removeElement, replaceElement, upsertField } from '@/print'
 import { selectLayoutById } from '@/redux/modules/layout/selectors'
@@ -60,7 +61,7 @@ const hideWhenEmptyCell = (
   onChange: (element: LayoutElement) => void,
 ) => (
   <Cell
-    title="内容が空なら印刷しない"
+    title={t('app_skip_this_element_when_empty')}
     accessory="switch"
     switchValue={element.hideWhenEmpty}
     onSwitchValueChange={(hideWhenEmpty) =>
@@ -75,12 +76,14 @@ const Component: React.FC<ComponentProps> = ({
   onChange,
   onDelete,
 }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
 
   if (!layout || !element) {
     return (
       <View style={styles.empty}>
-        <Text style={styles.emptyText}>要素が見つかりません</Text>
+        <Text style={styles.emptyText}>{t('app_element_not_found')}</Text>
       </View>
     )
   }
@@ -90,34 +93,34 @@ const Component: React.FC<ComponentProps> = ({
       {element.type === 'text' && (
         <>
           <TextSourceSection
-            title="内容"
+            title={t('app_content')}
             layout={layout}
             source={element.source}
             onChange={(source, field) =>
               onChange({ ...element, source }, field)
             }
           />
-          <Section title="体裁">
+          <Section title={t('app_appearance')}>
             <PickerCell
-              title="文字の大きさ"
+              title={t('app_font_size')}
               value={element.fontSize}
               items={fontSizeItems}
               onChange={(fontSize) => onChange({ ...element, fontSize })}
             />
             <PickerCell
-              title="寄せ"
+              title={t('app_alignment')}
               value={element.alignment}
               items={alignmentItems}
               onChange={(alignment) => onChange({ ...element, alignment })}
             />
             <Cell
-              title="太字"
+              title={t('app_bold')}
               accessory="switch"
               switchValue={element.bold}
               onSwitchValueChange={(bold) => onChange({ ...element, bold })}
             />
             <Cell
-              title="下線"
+              title={t('app_underline')}
               accessory="switch"
               switchValue={element.underline}
               onSwitchValueChange={(underline) =>
@@ -139,9 +142,9 @@ const Component: React.FC<ComponentProps> = ({
               onChange({ ...element, source }, field)
             }
           />
-          <Section title="体裁">
+          <Section title={t('app_appearance')}>
             <NumberValueCell
-              title="印刷する幅"
+              title={t('app_print_width')}
               value={element.width}
               unit="px"
               min={1}
@@ -149,13 +152,13 @@ const Component: React.FC<ComponentProps> = ({
               onChange={(width) => onChange({ ...element, width })}
             />
             <PickerCell
-              title="変換方法"
+              title={t('app_image_conversion')}
               value={element.imageType}
               items={imageTypeItems}
               onChange={(imageType) => onChange({ ...element, imageType })}
             />
             <PickerCell
-              title="寄せ"
+              title={t('app_alignment')}
               value={element.alignment}
               items={alignmentItems}
               onChange={(alignment) => onChange({ ...element, alignment })}
@@ -168,29 +171,29 @@ const Component: React.FC<ComponentProps> = ({
       {element.type === 'qrcode' && (
         <>
           <TextSourceSection
-            title="内容"
+            title={t('app_content')}
             layout={layout}
             source={element.source}
             onChange={(source, field) =>
               onChange({ ...element, source }, field)
             }
           />
-          <Section title="体裁">
+          <Section title={t('app_appearance')}>
             <NumberValueCell
-              title="大きさ"
+              title={t('app_size')}
               value={element.moduleSize}
               min={1}
               max={16}
               onChange={(moduleSize) => onChange({ ...element, moduleSize })}
             />
             <PickerCell
-              title="誤り訂正レベル"
+              title={t('app_error_correction_level')}
               value={element.errorLevel}
               items={errorLevelItems}
               onChange={(errorLevel) => onChange({ ...element, errorLevel })}
             />
             <PickerCell
-              title="寄せ"
+              title={t('app_alignment')}
               value={element.alignment}
               items={alignmentItems}
               onChange={(alignment) => onChange({ ...element, alignment })}
@@ -204,7 +207,7 @@ const Component: React.FC<ComponentProps> = ({
         element.columns.map((column, index) => (
           <View key={`column-${element.id}-${index}`}>
             <TextSourceSection
-              title={`${index + 1}列目`}
+              title={t('app_column_value', index + 1)}
               layout={layout}
               source={column.source}
               onChange={(source, field) =>
@@ -221,9 +224,9 @@ const Component: React.FC<ComponentProps> = ({
             />
             <Section>
               <NumberValueCell
-                title={`${index + 1}列目の幅`}
+                title={t('app_column_value_width', index + 1)}
                 value={column.width}
-                unit="文字"
+                unit={t('app_text')}
                 min={1}
                 max={48}
                 onChange={(width) =>
@@ -236,7 +239,7 @@ const Component: React.FC<ComponentProps> = ({
                 }
               />
               <PickerCell
-                title={`${index + 1}列目の寄せ`}
+                title={t('app_column_value_alignment', index + 1)}
                 value={column.alignment}
                 items={alignmentItems}
                 onChange={(alignment) =>
@@ -253,9 +256,9 @@ const Component: React.FC<ComponentProps> = ({
         ))}
 
       {element.type === 'columns' && (
-        <Section title="列">
+        <Section title={t('app_columns')}>
           <Cell
-            title="列を追加する"
+            title={t('app_add_a_column')}
             onPress={() =>
               onChange({
                 ...element,
@@ -272,7 +275,7 @@ const Component: React.FC<ComponentProps> = ({
           />
           {element.columns.length > 1 && (
             <Cell
-              title="最後の列を削除する"
+              title={t('app_remove_the_last_column')}
               onPress={() =>
                 onChange({
                   ...element,
@@ -286,9 +289,9 @@ const Component: React.FC<ComponentProps> = ({
       )}
 
       {element.type === 'divider' && (
-        <Section title="体裁">
+        <Section title={t('app_appearance')}>
           <PickerCell
-            title="線の種類"
+            title={t('app_line_style')}
             value={element.barType}
             items={barTypeItems}
             onChange={(barType) => onChange({ ...element, barType })}
@@ -297,11 +300,11 @@ const Component: React.FC<ComponentProps> = ({
       )}
 
       {element.type === 'spacer' && (
-        <Section title="体裁">
+        <Section title={t('app_appearance')}>
           <NumberValueCell
-            title="空ける行数"
+            title={t('app_blank_lines')}
             value={element.lines}
-            unit="行"
+            unit={t('app_lines')}
             min={1}
             max={20}
             onChange={(lines) => onChange({ ...element, lines })}
@@ -310,21 +313,21 @@ const Component: React.FC<ComponentProps> = ({
       )}
 
       {element.type === 'timestamp' && (
-        <Section title="体裁">
+        <Section title={t('app_appearance')}>
           <PickerCell
-            title="書式"
+            title={t('app_date_format')}
             value={element.format}
             items={timestampFormatItems}
             onChange={(format) => onChange({ ...element, format })}
           />
           <TextValueCell
-            title="書式を直接指定する"
+            title={t('app_enter_a_custom_format')}
             value={element.format}
-            dialogDescription="dayjs の書式で指定します"
+            dialogDescription={t('app_use_dayjs_date_format_tokens')}
             onChange={(format) => onChange({ ...element, format })}
           />
           <PickerCell
-            title="寄せ"
+            title={t('app_alignment')}
             value={element.alignment}
             items={alignmentItems}
             onChange={(alignment) => onChange({ ...element, alignment })}
@@ -332,14 +335,16 @@ const Component: React.FC<ComponentProps> = ({
         </Section>
       )}
 
-      <Section title="操作">
-        <Cell title="この要素を削除する" onPress={onDelete} />
+      <Section title={t('app_actions')}>
+        <Cell title={t('app_delete_this_element')} onPress={onDelete} />
       </Section>
     </SafeScrollView>
   )
 }
 
 const Container: React.FC<Props> = (props) => {
+  const t = useLocalization()
+
   const navigation = useNavigation()
   const dispatch = useDispatch()
 
@@ -353,9 +358,9 @@ const Container: React.FC<Props> = (props) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: element ? describeElementType(element.type) : '要素',
+      title: element ? describeElementType(element.type) : t('app_element'),
     })
-  }, [navigation, element])
+  }, [t, navigation, element])
 
   const onChange = useCallback(
     (next: LayoutElement, field?: LayoutField) => {
@@ -374,8 +379,8 @@ const Container: React.FC<Props> = (props) => {
     }
     try {
       const confirmed = await AlertAsync(
-        '確認',
-        `${describeElementType(element.type)}の要素を削除しますか？`,
+        t('app_confirm'),
+        t('app_delete_the_value_element', describeElementType(element.type)),
         [
           { text: MESSAGE.NO, onPress: () => false, style: 'cancel' },
           { text: MESSAGE.YES, onPress: () => true },
@@ -387,9 +392,11 @@ const Container: React.FC<Props> = (props) => {
       }
     } catch (e: any) {
       console.warn('onDelete', e)
-      dispatch(enqueueSnackbar({ message: `要素を削除できませんでした` }))
+      dispatch(
+        enqueueSnackbar({ message: t('app_could_not_delete_the_element') }),
+      )
     }
-  }, [dispatch, element, layout, navigation])
+  }, [t, dispatch, element, layout, navigation])
 
   return <Component {...props} {...{ layout, element, onChange, onDelete }} />
 }

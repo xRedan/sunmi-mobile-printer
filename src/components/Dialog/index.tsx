@@ -16,6 +16,7 @@ import {
 import { makeStyles } from 'react-native-swag-styles'
 import { COLOR, MESSAGE } from '@/CONSTANTS'
 import { Button } from '@/components/Button'
+import { useLocalization } from '@/localization'
 import { styleType } from '@/utils/styles'
 
 /**
@@ -66,6 +67,8 @@ const Component: React.FC<ComponentProps> = ({
   onSubmit,
   onCancel,
 }) => {
+  useLocalization()
+
   const styles = useStyles()
 
   const inputRef = useRef<TextInputInstance>(null)

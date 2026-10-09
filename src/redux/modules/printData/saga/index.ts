@@ -6,6 +6,7 @@ import {
   type SqliteConnection,
   savePrintData as savePrintDataToDatabase,
 } from '@/database'
+import { t } from '@/localization'
 import type { PrintData } from '@/print'
 import { enqueueSnackbar } from '@/redux/modules/snackbar/slice'
 import { createUUID } from '@/utils/uuid'
@@ -48,9 +49,7 @@ function* fetchPrintDataSaga() {
     yield call(reloadPrintDataSaga)
   } catch (e: any) {
     console.warn('fetchPrintDataSaga', e)
-    yield put(
-      enqueueSnackbar({ message: `印刷データの読み込みに失敗しました` }),
-    )
+    yield put(enqueueSnackbar({ message: t('app_could_not_load_print_data') }))
   } finally {
     yield put(assignIsLoading(false))
   }
@@ -63,7 +62,7 @@ function* savePrintDataSaga({ payload }: ReturnType<typeof savePrintData>) {
     yield call(reloadPrintDataSaga)
   } catch (e: any) {
     console.warn('savePrintDataSaga', e)
-    yield put(enqueueSnackbar({ message: `印刷データの保存に失敗しました` }))
+    yield put(enqueueSnackbar({ message: t('app_could_not_save_print_data') }))
   }
 }
 
@@ -75,12 +74,14 @@ function* duplicatePrintDataSaga({
     yield call(savePrintDataToDatabase, db, {
       ...payload,
       id: createUUID(),
-      title: `${payload.title}のコピー`,
+      title: t('app_value_copy', payload.title),
     })
     yield call(reloadPrintDataSaga)
   } catch (e: any) {
     console.warn('duplicatePrintDataSaga', e)
-    yield put(enqueueSnackbar({ message: `印刷データの複製に失敗しました` }))
+    yield put(
+      enqueueSnackbar({ message: t('app_could_not_duplicate_print_data') }),
+    )
   }
 }
 
@@ -91,6 +92,8 @@ function* deletePrintDataSaga({ payload }: ReturnType<typeof deletePrintData>) {
     yield call(reloadPrintDataSaga)
   } catch (e: any) {
     console.warn('deletePrintDataSaga', e)
-    yield put(enqueueSnackbar({ message: `印刷データの削除に失敗しました` }))
+    yield put(
+      enqueueSnackbar({ message: t('app_could_not_delete_print_data') }),
+    )
   }
 }

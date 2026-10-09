@@ -1,6 +1,7 @@
 import type { PrintImageType } from '@mitsuharu/react-native-sunmi-printer-library'
 import dayjs from 'dayjs'
 import { BASE64, FONT_SIZE } from '@/CONSTANTS'
+import { t } from '@/localization'
 import { createUUID } from '@/utils/uuid'
 import { DEFAULT_TIMESTAMP_FORMAT } from '../factory'
 import type {
@@ -40,19 +41,73 @@ const fieldDefinitions: {
   label: string
   valueType: LayoutField['valueType']
 }[] = [
-  { key: 'name', label: '名前', valueType: 'text' },
-  { key: 'alias', label: '別名、読み仮名など', valueType: 'text' },
-  { key: 'icon', label: 'アイコン画像', valueType: 'image' },
-  { key: 'description', label: 'フリーテキスト', valueType: 'multilineText' },
-  { key: 'company', label: '会社名', valueType: 'text' },
-  { key: 'position', label: '職種など', valueType: 'text' },
-  { key: 'address', label: 'アドレス', valueType: 'text' },
+  {
+    key: 'name',
+    get label() {
+      return t('app_field_name')
+    },
+    valueType: 'text',
+  },
+  {
+    key: 'alias',
+    get label() {
+      return t('app_alias_pronunciation')
+    },
+    valueType: 'text',
+  },
+  {
+    key: 'icon',
+    get label() {
+      return t('app_profile_image')
+    },
+    valueType: 'image',
+  },
+  {
+    key: 'description',
+    get label() {
+      return t('app_description')
+    },
+    valueType: 'multilineText',
+  },
+  {
+    key: 'company',
+    get label() {
+      return t('app_company')
+    },
+    valueType: 'text',
+  },
+  {
+    key: 'position',
+    get label() {
+      return t('app_job_title')
+    },
+    valueType: 'text',
+  },
+  {
+    key: 'address',
+    get label() {
+      return t('app_address')
+    },
+    valueType: 'text',
+  },
   { key: 'twitter', label: 'X(Twitter)', valueType: 'text' },
   { key: 'facebook', label: 'Facebook', valueType: 'text' },
   { key: 'github', label: 'GitHub', valueType: 'text' },
   { key: 'website', label: 'Website', valueType: 'text' },
-  { key: 'qrUrl', label: 'QRコードのURL', valueType: 'url' },
-  { key: 'qrDescription', label: 'QRコードの説明', valueType: 'text' },
+  {
+    key: 'qrUrl',
+    get label() {
+      return t('app_qr_code_url')
+    },
+    valueType: 'url',
+  },
+  {
+    key: 'qrDescription',
+    get label() {
+      return t('app_qr_code_description')
+    },
+    valueType: 'text',
+  },
 ]
 
 const centeredText = (fieldId: string, fontSize: number): LayoutElement => ({
@@ -279,39 +334,46 @@ export const createPresets = (): {
   images: PresetImage[]
 } => {
   const card = createProfileLayout({
-    name: '名刺',
+    name: t('app_business_card'),
     withOrganization: true,
     // 写真や絵をそのまま載せることを想定して、濃淡を残す
     imageType: 'grayscale',
   })
   const simpleCard = createProfileLayout({
-    name: '名刺（シンプル）',
+    name: t('app_business_card_simple'),
     withOrganization: false,
     imageType: 'binary',
   })
   const images: PresetImage[] = []
 
   const printData: PrintData[] = [
-    createPrintDataFor(simpleCard.layout, simpleCard.fieldIds, '開発者紹介', {
-      name: text('江本光晴'),
-      alias: text('Mitsuharu Emoto'),
-      icon: createImage(AVATAR_BASE64, images),
-      description: text('iOSアプリの開発が好き'),
-      twitter: text('@mitsuharu_e'),
-      facebook: text('mitsuharu.emoto'),
-      github: text('mitsuharu'),
-      website: text('https://mitsuharu.github.io/'),
-      qrUrl: text('https://twitter.com/mitsuharu_e'),
-      qrDescription: text('follow me'),
-    }),
-    createPrintDataFor(card.layout, card.fieldIds, 'サンプル', {
-      name: text('織田信長'),
+    createPrintDataFor(
+      simpleCard.layout,
+      simpleCard.fieldIds,
+      t('app_developer_profile'),
+      {
+        name: text(t('app_mitsuharu_emoto')),
+        alias: text('Mitsuharu Emoto'),
+        icon: createImage(AVATAR_BASE64, images),
+        description: text(t('app_i_enjoy_developing_ios_apps')),
+        twitter: text('@mitsuharu_e'),
+        facebook: text('mitsuharu.emoto'),
+        github: text('mitsuharu'),
+        website: text('https://mitsuharu.github.io/'),
+        qrUrl: text('https://twitter.com/mitsuharu_e'),
+        qrDescription: text('follow me'),
+      },
+    ),
+    createPrintDataFor(card.layout, card.fieldIds, t('app_sample'), {
+      name: text(t('app_nobunaga_oda')),
       alias: text('Nobunaga Oda'),
       icon: createImage(SAMPLE_AVATAR_BASE64, images),
-      description: text('人間五十年、下天の内をくらぶれば、夢幻の如くなり'),
-      company: text('株式会社 織田軍'),
-      position: text('代表取締役大名'),
-      address: text('尾張国'),
+      description: text(
+        t('app_fifty_years_of_human_life_compared_with_the_lower'),
+      ),
+      company: text(t('app_oda_army_co_ltd')),
+      position: text(t('app_president_and_daimyo')),
+      address: text(t('app_owari_province')),
       twitter: text('tw'),
       facebook: text('fb'),
       github: text('gh'),

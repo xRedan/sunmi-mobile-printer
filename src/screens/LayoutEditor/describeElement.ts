@@ -1,3 +1,4 @@
+import { quantity, t } from '@/localization'
 import type {
   Layout,
   LayoutElement,
@@ -6,13 +7,27 @@ import type {
 } from '@/print'
 
 const typeLabels: Record<LayoutElementType, string> = {
-  text: 'テキスト',
-  image: '画像',
-  qrcode: 'QRコード',
-  columns: '列',
-  divider: '区切り線',
-  spacer: '空白',
-  timestamp: '印刷時刻',
+  get text() {
+    return t('app_text_e5cdbf')
+  },
+  get image() {
+    return t('app_image')
+  },
+  get qrcode() {
+    return t('app_qr_code')
+  },
+  get columns() {
+    return t('app_columns')
+  },
+  get divider() {
+    return t('app_divider')
+  },
+  get spacer() {
+    return t('app_blank_space')
+  },
+  get timestamp() {
+    return t('app_print_timestamp')
+  },
 }
 
 /**
@@ -35,20 +50,32 @@ export const addableElementTypes: LayoutElementType[] = [
 ]
 
 const barTypeLabels: Record<string, string> = {
-  line: '実線',
-  double: '二重線',
-  dots: '点線',
-  wave: '波線',
-  plus: 'プラス',
-  star: '星',
+  get line() {
+    return t('app_solid_line')
+  },
+  get double() {
+    return t('app_double_line')
+  },
+  get dots() {
+    return t('app_dotted_line')
+  },
+  get wave() {
+    return t('app_wavy_line')
+  },
+  get plus() {
+    return t('app_plus_signs')
+  },
+  get star() {
+    return t('app_stars')
+  },
 }
 
 const describeTextSource = (source: TextSource, layout: Layout): string => {
   if (source.kind === 'static') {
-    return source.value.trim() === '' ? '（未入力）' : source.value
+    return source.value.trim() === '' ? t('app_empty') : source.value
   }
   const field = layout.fields.find(({ id }) => id === source.fieldId)
-  return field ? `［${field.label || field.key}］` : '［参照先なし］'
+  return field ? `［${field.label || field.key}］` : t('app_missing_field')
 }
 
 /**
@@ -65,7 +92,9 @@ export const describeElement = (
       if (element.source.kind === 'field') {
         return describeTextSource(element.source, layout)
       }
-      return element.source.asset ? `幅${element.width}px` : '（画像未選択）'
+      return element.source.asset
+        ? t('app_width_valuepx', element.width)
+        : t('app_no_image_selected')
     case 'qrcode':
       return describeTextSource(element.source, layout)
     case 'columns':
@@ -75,7 +104,7 @@ export const describeElement = (
     case 'divider':
       return barTypeLabels[element.barType] ?? element.barType
     case 'spacer':
-      return `${element.lines}行`
+      return quantity('app_value_lines', element.lines, element.lines)
     case 'timestamp':
       return element.format
   }

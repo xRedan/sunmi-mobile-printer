@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react'
 import type { KeyboardTypeOptions } from 'react-native'
 import { InputDialog } from '@/components/Dialog'
 import { Cell } from '@/components/List'
+import { useLocalization } from '@/localization'
 
 type Props = {
   title: string
@@ -44,6 +45,8 @@ export const TextValueCell: React.FC<Props> = ({
   multiline,
   onChange,
 }) => {
+  const t = useLocalization()
+
   const [isVisible, setIsVisible] = useState<boolean>(false)
 
   const onPress = useCallback(() => setIsVisible(true), [])
@@ -61,7 +64,9 @@ export const TextValueCell: React.FC<Props> = ({
       <Cell
         title={title}
         description={
-          value === '' ? (placeholder ?? '（未設定）') : (displayValue ?? value)
+          value === ''
+            ? (placeholder ?? t('app_not_set'))
+            : (displayValue ?? value)
         }
         onPress={onPress}
       />

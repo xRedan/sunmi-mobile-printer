@@ -4,6 +4,7 @@ import {
   initializeDatabase,
   seedPresets,
 } from '@/database'
+import { t } from '@/localization'
 import { fetchLayouts } from '@/redux/modules/layout/slice'
 import { fetchPrintData } from '@/redux/modules/printData/slice'
 import { enqueueSnackbar } from '@/redux/modules/snackbar/slice'
@@ -26,7 +27,7 @@ export function* databaseSaga() {
     yield put(assignIsReady(false))
     yield put(
       enqueueSnackbar({
-        message: `データの読み込みに失敗しました`,
+        message: t('app_could_not_load_data'),
       }),
     )
   }

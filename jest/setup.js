@@ -3,6 +3,8 @@ jest.mock('react-native-reanimated', () =>
   require('react-native-reanimated/mock'),
 )
 
+jest.mock('@/specs/NativeLocalization', () => require('./mocks/localization'))
+
 // suppress console.log and warn
 global.console = {
   log: jest.fn(),

@@ -13,6 +13,7 @@ import { makeStyles } from 'react-native-swag-styles'
 import { COLOR, MESSAGE } from '@/CONSTANTS'
 import { Button } from '@/components/Button'
 import { Cell } from '@/components/List'
+import { useLocalization } from '@/localization'
 import { styleType } from '@/utils/styles'
 
 export type ListPickerItem<T> = {
@@ -65,6 +66,8 @@ export const ListPickerModal = <T,>({
   onSelect,
   onCancel,
 }: Props<T>): React.ReactElement => {
+  useLocalization()
+
   const styles = useStyles()
 
   return (

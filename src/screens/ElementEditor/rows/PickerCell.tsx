@@ -6,6 +6,7 @@ import {
   type ListPickerItem,
   ListPickerModal,
 } from '@/components/Modal/ListPickerModal'
+import { t } from '@/localization'
 
 type Props<T> = {
   title: string
@@ -47,7 +48,7 @@ export const PickerCell = <T,>({
       <Cell
         title={title}
         description={
-          items.find((item) => item.value === value)?.title ?? '（未設定）'
+          items.find((item) => item.value === value)?.title ?? t('app_not_set')
         }
         onPress={() => setIsVisible(true)}
       />

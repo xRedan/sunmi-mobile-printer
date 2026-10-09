@@ -21,6 +21,7 @@ import { makeStyles } from 'react-native-swag-styles'
 import { useDispatch, useSelector } from 'react-redux'
 import { COLOR, ICON } from '@/CONSTANTS'
 import { Cell, Section } from '@/components/List'
+import { quantity, useLocalization } from '@/localization'
 import type { Layout, LayoutElement, LayoutElementType } from '@/print'
 import {
   addElement,
@@ -72,12 +73,14 @@ const Component: React.FC<ComponentProps> = ({
   onSelectElementType,
   onCancelPicker,
 }) => {
+  const t = useLocalization()
+
   const styles = useStyles()
 
   if (!layout) {
     return (
       <View style={styles.empty}>
-        <Text style={styles.emptyText}>レイアウトが見つかりません</Text>
+        <Text style={styles.emptyText}>{t('app_layout_not_found_31b6c4')}</Text>
       </View>
     )
   }
@@ -98,36 +101,47 @@ const Component: React.FC<ComponentProps> = ({
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         ListHeaderComponent={
           <Text style={styles.header}>
-            要素（右のハンドルをドラッグすると並べ替えできます）
+            {t('app_elements_drag_the_handles_on_the_right_to_reorder')}
           </Text>
         }
-        ListEmptyComponent={<Text style={styles.header}>要素がありません</Text>}
+        ListEmptyComponent={
+          <Text style={styles.header}>{t('app_no_elements')}</Text>
+        }
         contentContainerStyle={styles.contentContainer}
       />
       <Section>
-        <Cell title="要素を追加する" onPress={onPressAdd} />
+        <Cell title={t('app_add_an_element')} onPress={onPressAdd} />
         <Cell
-          title="入力項目"
+          title={t('app_input_fields')}
           description={
             unusedFieldCount > 0
-              ? `${layout.fields.length}個（うち未使用${unusedFieldCount}個）`
-              : `${layout.fields.length}個`
+              ? quantity(
+                  'app_value_fields_value_unused',
+                  layout.fields.length,
+                  layout.fields.length,
+                  unusedFieldCount,
+                )
+              : quantity(
+                  'app_value_fields',
+                  layout.fields.length,
+                  layout.fields.length,
+                )
           }
           onPress={onPressFields}
           accessory="disclosure"
         />
         <Cell
-          title="このレイアウトで印刷する"
-          description="入力項目は空のまま印刷します"
+          title={t('app_print_this_layout')}
+          description={t('app_input_fields_will_be_left_empty')}
           onPress={onPressPrint}
         />
         <Cell
-          title="印刷イメージを見る"
+          title={t('app_print_preview')}
           onPress={onPressPreview}
           accessory="disclosure"
         />
         <Cell
-          title="印刷データ"
+          title={t('app_print_data')}
           icon={ICON.PRINT_DATA}
           onPress={onPressPrintData}
           accessory="disclosure"
@@ -143,6 +157,8 @@ const Component: React.FC<ComponentProps> = ({
 }
 
 const Container: React.FC<Props> = (props) => {
+  const t = useLocalization()
+
   const navigation = useNavigation()
   const dispatch = useDispatch()
 
@@ -159,8 +175,8 @@ const Container: React.FC<Props> = (props) => {
   )
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: layout?.name ?? 'レイアウト' })
-  }, [navigation, layout?.name])
+    navigation.setOptions({ title: layout?.name ?? t('app_layout') })
+  }, [t, navigation, layout?.name])
 
   const onReorder = useCallback(
     ({ from, to }: ReorderableListReorderEvent) => {

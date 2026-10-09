@@ -4,6 +4,7 @@ import AlertAsync from 'react-native-alert-async'
 import { eventChannel } from 'redux-saga'
 import { call, put, takeLeading } from 'redux-saga/effects'
 import { MESSAGE } from '@/CONSTANTS'
+import { t } from '@/localization'
 import { enqueueSnackbar } from '@/redux/modules/snackbar/slice'
 import { printQRCode } from '../slice'
 import type { QRCodeSource } from '../utils'
@@ -23,7 +24,7 @@ export function* printQRCodeSaga({ payload }: ReturnType<typeof printQRCode>) {
     console.warn('printSaga', e)
     yield put(
       enqueueSnackbar({
-        message: `印刷に失敗しました`,
+        message: t('app_printing_failed'),
       }),
     )
   }
@@ -53,7 +54,9 @@ export function* duplicateQRCodeSaga() {
     console.warn('printSaga', e)
     yield put(
       enqueueSnackbar({
-        message: `キャンセル、もしくはお使いの端末はスキャン機能がご利用できません`,
+        message: t(
+          'app_scanning_was_cancelled_or_this_device_does_not_support',
+        ),
       }),
     )
   }
@@ -76,8 +79,8 @@ export function* monitorScanSuccessSaga() {
 function* scanSuccessSaga(message: string) {
   const result: boolean = yield call(
     AlertAsync,
-    'QR複製の確認',
-    `「${message}」の内容で複製しますか？`,
+    t('app_confirm_qr_code_copy'),
+    t('app_copy_this_content_value', message),
     [
       { text: MESSAGE.NO, onPress: () => false },
       { text: MESSAGE.YES, onPress: () => true },

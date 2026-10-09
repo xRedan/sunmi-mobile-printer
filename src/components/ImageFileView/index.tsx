@@ -12,6 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useDispatch } from 'react-redux'
 import { BASE64 } from '@/CONSTANTS'
+import { useLocalization } from '@/localization'
 import { enqueueSnackbar } from '@/redux/modules/snackbar/slice'
 import { fetchResizedImagePath } from '@/utils/ImagePicker'
 import { styleType } from '@/utils/styles'
@@ -41,6 +42,8 @@ const makeImageSource = (
   path ? { uri: `file://${path}` } : undefined
 
 const Component: React.FC<ComponentProps> = ({ style, source, onPress }) => {
+  useLocalization()
+
   return (
     <Pressable
       style={({ pressed }) => [
@@ -60,6 +63,8 @@ const Component: React.FC<ComponentProps> = ({ style, source, onPress }) => {
 }
 
 const Container: React.FC<Props> = (props) => {
+  const t = useLocalization()
+
   const { path, onChange } = props
   const dispatch = useDispatch()
 
@@ -76,9 +81,9 @@ const Container: React.FC<Props> = (props) => {
       }
     } catch (e: any) {
       console.warn('ImageFileView', e)
-      dispatch(enqueueSnackbar({ message: `画像を選べませんでした` }))
+      dispatch(enqueueSnackbar({ message: t('app_could_not_select_an_image') }))
     }
-  }, [dispatch, onChange])
+  }, [t, dispatch, onChange])
 
   return <Component {...props} {...{ source, onPress }} />
 }

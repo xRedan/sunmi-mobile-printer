@@ -2,6 +2,7 @@ import type React from 'react'
 import { useCallback, useState } from 'react'
 import { InputDialog } from '@/components/Dialog'
 import { Section } from '@/components/List'
+import { useLocalization } from '@/localization'
 import type { Layout, LayoutField, TextSource } from '@/print'
 import { createLayoutField } from '@/print'
 import { PickerCell, TextValueCell } from './rows'
@@ -30,6 +31,8 @@ export const TextSourceSection: React.FC<Props> = ({
   source,
   onChange,
 }) => {
+  const t = useLocalization()
+
   const [isDialogVisible, setIsDialogVisible] = useState<boolean>(false)
 
   const onSubmitNewField = useCallback(
@@ -37,12 +40,12 @@ export const TextSourceSection: React.FC<Props> = ({
       setIsDialogVisible(false)
       const trimmed = label.trim()
       const field = createLayoutField({
-        label: trimmed || '入力項目',
+        label: trimmed || t('app_input_fields'),
         key: trimmed || `field${layout.fields.length + 1}`,
       })
       onChange({ kind: 'field', fieldId: field.id }, field)
     },
-    [layout.fields.length, onChange],
+    [t, layout.fields.length, onChange],
   )
 
   const onChangeKind = useCallback(
@@ -68,34 +71,36 @@ export const TextSourceSection: React.FC<Props> = ({
   return (
     <Section title={title}>
       <PickerCell
-        title="内容の決め方"
+        title={t('app_content_source')}
         value={source.kind}
         items={[
           {
             value: 'static' as SourceKind,
-            title: 'レイアウトに直接書く',
-            description: 'どの印刷データでも同じ内容になります',
+            title: t('app_use_fixed_text'),
+            description: t('app_use_the_same_text_for_every_print_record'),
           },
           {
             value: 'field' as SourceKind,
-            title: '印刷データごとに入力する',
-            description: '印刷データごとに内容を変えられます',
+            title: t('app_use_an_input_field'),
+            description: t('app_enter_different_content_for_each_print_record'),
           },
         ]}
         onChange={onChangeKind}
       />
       {source.kind === 'static' ? (
         <TextValueCell
-          title="内容"
+          title={t('app_content')}
           value={source.value}
-          dialogDescription="改行して複数行にできます"
+          dialogDescription={t('app_use_line_breaks_for_multiline_text')}
           multiline={true}
           onChange={(value) => onChange({ kind: 'static', value })}
         />
       ) : (
         <PickerCell
-          title="入力項目"
-          description="印刷データごとに入力する箇所です"
+          title={t('app_input_fields')}
+          description={t(
+            'app_fields_whose_content_can_vary_between_print_records',
+          )}
           value={source.fieldId}
           items={layout.fields.map((field) => ({
             value: field.id,
@@ -103,8 +108,8 @@ export const TextSourceSection: React.FC<Props> = ({
             description: field.key,
           }))}
           action={{
-            title: '入力項目を追加する',
-            description: 'このレイアウトに新しい入力欄を作ります',
+            title: t('app_add_an_input_field'),
+            description: t('app_create_a_new_input_field_in_this_layout'),
             onPress: () => setIsDialogVisible(true),
           }}
           onChange={(fieldId) => onChange({ kind: 'field', fieldId })}
@@ -112,8 +117,8 @@ export const TextSourceSection: React.FC<Props> = ({
       )}
       <InputDialog
         isVisible={isDialogVisible}
-        title="入力項目の追加"
-        description="表示名を入力してください"
+        title={t('app_add_input_field')}
+        description={t('app_enter_a_display_name')}
         onPress={onSubmitNewField}
         onCancel={() => setIsDialogVisible(false)}
       />

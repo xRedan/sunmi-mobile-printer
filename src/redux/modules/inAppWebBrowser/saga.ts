@@ -1,5 +1,6 @@
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import { call, put, takeEvery } from 'redux-saga/effects'
+import { t } from '@/localization'
 import { enqueueSnackbar } from '@/redux/modules/snackbar/slice'
 import { openWeb } from './slice'
 
@@ -14,7 +15,7 @@ function* openWebSaga({ payload }: ReturnType<typeof openWeb>) {
     console.warn('openWebSaga', e)
     yield put(
       enqueueSnackbar({
-        message: `web browser を開くのを失敗しまた`,
+        message: t('app_could_not_open_the_web_browser'),
       }),
     )
   }
