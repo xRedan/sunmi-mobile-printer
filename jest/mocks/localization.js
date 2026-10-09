@@ -44,13 +44,19 @@ const load = (directory) => {
 }
 
 const resources = {
-  ja: load('values'),
-  jaExplicit: load('values-ja'),
+  default: load('values'),
+  ja: load('values-ja'),
   en: load('values-en'),
 }
 const subscribers = new Set()
 let locale = 'ja-JP'
-const current = () => resources[locale.startsWith('en') ? 'en' : 'ja']
+const current = () => {
+  const language = locale
+    .split(',')
+    .map((tag) => tag.match(/^(en|ja)(?:-|$)/)?.[1])
+    .find(Boolean)
+  return language ? resources[language] : resources.default
+}
 const getResources = () => ({ locale, strings: current().strings })
 
 const setLocale = (value) => {

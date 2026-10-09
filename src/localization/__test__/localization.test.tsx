@@ -23,7 +23,7 @@ afterEach(() => changeLocale('ja-JP'))
 
 describe('Android resource localization', () => {
   it('provides matching Japanese and English resources and argument positions', () => {
-    expect(resources.jaExplicit).toEqual(resources.ja)
+    expect(resources.default).toEqual(resources.en)
     expect(Object.keys(resources.ja.strings).sort()).toEqual(
       [...stringKeys].sort(),
     )
@@ -45,7 +45,7 @@ describe('Android resource localization', () => {
     }
   })
 
-  it('preserves Japanese defaults and changes module-level labels and the guide when resources change', () => {
+  it('preserves Japanese labels and changes module-level labels and the guide when resources change', () => {
     expect(t('app_name')).toBe('モバイル印刷')
     expect(MESSAGE.CANCEL).toBe('キャンセル')
     const japaneseGuide = guideSections.map((section) => ({ ...section }))
@@ -56,6 +56,22 @@ describe('Android resource localization', () => {
     expect(MESSAGE.CANCEL).toBe('Cancel')
     expect(guideSections[0].title).toBe('Two ways to print')
     expect(guideSections[0].body).not.toBe(japaneseGuide[0].body)
+  })
+
+  it('uses English when no preferred language is supported', () => {
+    for (const locale of ['it-IT', 'fr-FR', 'de-DE', 'it-IT,fr-FR']) {
+      changeLocale(locale)
+      expect(t('app_name')).toBe('Mobile Print')
+      expect(MESSAGE.CANCEL).toBe('Cancel')
+      expect(quantity('app_value_packages', 2, 2)).toBe('2 packages')
+    }
+  })
+
+  it('uses the first supported preferred language before the fallback', () => {
+    changeLocale('it-IT,ja-JP,en-US')
+    expect(t('app_name')).toBe('モバイル印刷')
+    changeLocale('it-IT,en-US,ja-JP')
+    expect(t('app_name')).toBe('Mobile Print')
   })
 
   it('formats user-supplied text without treating its percent signs as placeholders', () => {

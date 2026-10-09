@@ -16,7 +16,7 @@ class LocalizationResourcesTest {
       },
     ).resources
 
-  @Test fun testJapaneseDefaults() {
+  @Test fun testJapaneseSelection() {
     assertEquals("モバイル印刷", resources("ja-JP").getString(R.string.app_name))
     assertEquals("モバイル印刷", resources("ja-JP", "en-US").getString(R.string.app_name))
   }
@@ -29,12 +29,23 @@ class LocalizationResourcesTest {
     }
   }
 
-  @Test fun testUnsupportedLanguageFallsBackToJapanese() {
-    assertEquals("モバイル印刷", resources("it-IT").getString(R.string.app_name))
+  @Test fun testUnsupportedLanguageFallsBackToEnglish() {
+    for (locale in listOf("it-IT", "fr-FR", "de-DE")) {
+      assertEquals("Mobile Print", resources(locale).getString(R.string.app_name))
+    }
+    assertEquals("Mobile Print", resources("it-IT", "fr-FR").getString(R.string.app_name))
   }
 
   @Test fun testSecondarySupportedLanguage() {
     assertEquals("Mobile Print", resources("it-IT", "en-GB").getString(R.string.app_name))
+  }
+
+  @Test fun testSecondaryJapaneseLanguage() {
+    assertEquals("モバイル印刷", resources("it-IT", "ja-JP").getString(R.string.app_name))
+  }
+
+  @Test fun testEnglishBeforeJapanese() {
+    assertEquals("Mobile Print", resources("en-US", "ja-JP").getString(R.string.app_name))
   }
 
   @Test fun testQuantitySelection() {

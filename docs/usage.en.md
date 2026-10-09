@@ -1,6 +1,6 @@
 # Mobile Print for SUNMI — User guide
 
-The interface follows the Android language settings. English and Japanese are supported; other languages use the Japanese default resources. On Android 13 and later, an app language can also be selected in the system settings.
+The interface follows the Android language settings. English and Japanese are supported; other languages use the English default resources. On Android 13 and later, an app language can also be selected in the system settings.
 
 Existing layouts and print data retain their saved names and contents when the language changes. Bundled examples use the current language when first created. Screenshots in this guide show the Japanese interface.
 
